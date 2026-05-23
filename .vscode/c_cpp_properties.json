@@ -1,0 +1,8 @@
+﻿{
+    "configurations": [
+        {
+            "name": "STM32",
+            "compileCommands": "${workspaceFolder}/A/STM32/FindLine/build/Debug/compile_commands.json"
+        }
+    ]
+}
