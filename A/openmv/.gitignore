@@ -1,0 +1,64 @@
+# Python / MicroPython cache
+__pycache__/
+*.pyc
+*.pyo
+*.mpy
+
+# OpenMV IDE and capture output
+*.bmp
+*.gif
+*.jpg
+*.jpeg
+*.png
+*.ppm
+*.pgm
+*.raw
+*.bin
+*.tif
+*.tiff
+*.mp4
+*.avi
+*.mov
+captures/
+snapshots/
+samples/
+openmv-captures/
+openmv_captures/
+debug_*.jpg
+debug_*.bmp
+frame_*.jpg
+frame_*.bmp
+
+# Logs and telemetry
+*.log
+*.csv
+logs/
+uart_*.txt
+serial_*.txt
+telemetry_*.csv
+telemetry/
+traces/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*.swp
+*.swo
+~$*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local editor settings
+.vscode/
+.idea/
+
+# Local test artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+coverage.xml
