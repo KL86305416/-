@@ -1,0 +1,3 @@
+巡线采用感为科技八路灰度传感器有MCU版本串口通信，驱动文件为gray_sensor.c
+电机驱动为TB6612
+line_follower.c文件为寻仙算法，使用了PID与传感器加权，并具备防丢线功能。配置文件为line_follower_config.h
