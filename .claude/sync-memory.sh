@@ -2,7 +2,7 @@
 # 自动同步 CLAUDE.md —— 供 Claude Code Stop 钩子调用
 cd "$(dirname "$0")/.."
 
-git add CLAUDE.md
+git add CLAUDE.md A/CLAUDE.md
 
 # 检查暂存区是否有变化，有则提交推送
 if git diff --cached --quiet; then
