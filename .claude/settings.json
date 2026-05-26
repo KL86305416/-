@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "command": "git add CLAUDE.md && if ! git diff --cached --quiet; then git commit -m \"[auto] 同步 AI 记忆\" && git push; fi"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "command": "git pull --ff-only 2>&1 || echo 同步完成"
+      }
+    ]
+  }
+}
