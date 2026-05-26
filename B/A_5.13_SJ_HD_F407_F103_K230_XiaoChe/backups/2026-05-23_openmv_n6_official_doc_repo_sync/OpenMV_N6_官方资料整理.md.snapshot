@@ -1,0 +1,218 @@
+# OpenMV N6 官方资料整理
+
+- 整理日期：2026-05-20
+- 整理目录：`D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6`
+- 目标：把 OpenMV N6 的官方页面、官方 PDF、关键图片和一份中文索引整理到本地，方便后续画板、接线、查接口、查器件。
+
+## 1. 官方来源
+
+- Quick Reference：`https://docs.openmv.io/openmvcam/quickref/openmv-n6.html`
+- 产品页：`https://openmv.io/products/openmv-n6`
+- 官方附件来源：OpenMV 产品页中挂载的官方 PDF 附件（`cdn.shopify.com`）
+- 官方 GitHub 媒体文件：OpenMV 官方仓库 `openmv-media` 中的 N6 参考手册 PDF
+
+说明：
+- 本目录中的页面、图片、PDF 都来自 OpenMV 官方页面或 OpenMV 官方挂载附件。
+- `stm32n657a0.pdf`、`rm0486...pdf` 等虽然内容本身来自 ST，但这里采用的是 OpenMV 官方页面给出的链接或 OpenMV 官方仓库给出的文件入口。
+
+## 2. 已整理到本地的资料概览
+
+- 官方页面：2 份
+- 官方图片：2 份
+- 核心文档：5 份
+- 板上器件数据手册：23 份
+- 认证资料：3 份
+
+## 3. OpenMV N6 核心结论
+
+### 3.1 板卡定位
+
+OpenMV N6 是一块偏高性能的嵌入式视觉模组，核心是 `STM32N657`，并配合板载 `PAG7936` 全局快门图像传感器。它的资料结构比较完整，既有快速上手页面，也有整板原理图、图像传感器原理图、MCU 数据手册、参考手册，以及板上关键器件的数据手册。
+
+### 3.2 主要规格
+
+根据 OpenMV 官方 quick reference 与产品页：
+
+- MCU：`STM32N657`，`Cortex-M55 @ 800 MHz`
+- NPU：片上 `1 GHz NPU`，官方页面标注 `600 GOPS INT8`
+- 内存：`64 MB SDRAM`
+- 片上 SRAM：`4.2 MB internal SRAM`
+- 板载程序/存储 Flash：`32 MB octal flash`
+- 图像传感器：`PAG7936 1MP color global shutter`
+- 摄像头性能：官方产品页给出 `1280x800 @ 120 FPS`，`640x400 @ 240 FPS`，`320x200 @ 480 FPS`
+- USB：`USB-C High Speed 480 Mb/s`
+- 存储：`microSD` 卡槽
+- 无线：`Wi-Fi a/b/g/n` + `Bluetooth 5.1`
+- 有线网络：`10/100/1000 Ethernet`
+- 其他板载器件：`IMU`、`麦克风`、用户按键、RGB LED、电源状态 LED
+
+### 3.3 电源与电平注意事项
+
+这些点对后面接主控、画板、做扩展最重要：
+
+- OpenMV 官方产品页明确强调：`N6 的 I/O 不是 5V tolerant`
+- 所有外部逻辑接口应按 `3.3V` 逻辑设计
+- 官方说明强调：`应通过 VIN 给板子供电`
+- `3.3V` 引脚是板上稳压输出，不应当作为外部输入供电口使用
+- `VIN` 官方给出的输入范围重点是 `4.7V ~ 5.7V`
+- 支持 `3.7V LiPo` 电池，并带充电管理
+- 产品页给出的整板功耗：`Full Power 约 150mA @ 5V`
+
+### 3.4 对接口设计最有价值的 quick reference 信息
+
+Quick reference 里已经给出了非常关键的总线映射，后面做接口分配时建议优先看它：
+
+- UART：
+  - `UART3`: `TX=P4`, `RX=P5`
+  - `UART4`: `TX=P2`, `RX=P3`
+  - `UART7`: `TX=P14`, `RX=P13`
+- I2C：
+  - `I2C2`: `SCL=P4`, `SDA=P5`
+- SPI：
+  - `SPI2`: `MOSI=P0`, `MISO=P1`, `SCK=P2`, `CS=P3`
+  - `SPI4`: `MOSI=P18`, `MISO=P17`, `SCK=P16`, `CS=P15`
+- CAN：
+  - Quick reference 当前明确写出的总线是 `CAN1: TX=P2, RX=P3`
+  - 产品页宣传文案写的是 `two CAN buses`
+  - 因此后续如果你要用 CAN，建议以 quick reference + 原理图双重交叉确认，避免只看宣传页文字
+- PWM：
+  - 可用 PWM 管脚包括 `P4`、`P5`、`P6`、`P7`、`P8`、`P9`、`P10`
+- ADC：
+  - `P6_ADC`：满量程约 `3.3V`
+  - `BAT_ADC`：内部电池检测通道，满量程约 `5.0V`
+
+### 3.5 对你后面系统集成的意义
+
+如果你后面是把 OpenMV N6 作为视觉模块，接到你自己的 F407 主控板上，这里最值得先记住的结论是：
+
+- 逻辑电平必须严格按 `3.3V` 处理
+- 供电不要直接拿 `3.3V` 去喂整板，应该按官方建议走 `VIN`
+- 如果只是做视觉结果回传，`UART` 是最直接的
+- 如果追求更稳定总线、抗干扰、距离更宽松，可以考虑 `CAN`
+- 如果要高吞吐图像/数据交换，再进一步考虑 `SPI`
+- 具体到底选 `UART / CAN / SPI`，最好结合你主控板可用 IO、数据量、实时性要求，再回看 quick reference 与原理图一起定
+
+## 4. 建议阅读顺序
+
+建议你按下面顺序使用这些资料：
+
+1. 先看 `official_pages/openmv-n6-quickref.html`
+2. 再看 `official_pdfs/core_docs/OpenMV-N6-Schematic-Rev4.pdf`
+3. 再看 `official_pdfs/core_docs/pag7936-schematic-v3.pdf`
+4. 然后看 `official_pdfs/core_docs/stm32n657a0.pdf`
+5. 如果需要深入寄存器、时钟、外设细节，再看 `official_pdfs/core_docs/rm0486-stm32n647657xx-reference-manual.pdf`
+6. 如果要查供电链路、Wi-Fi/蓝牙、IMU、ESD/EMI、防护器件，再回到 `component_datasheets` 目录逐个查
+
+## 5. 本地目录结构
+
+```text
+OpenMV_N6
+|-- OpenMV_N6_官方资料整理.md
+|-- official_media
+|   |-- openmv-n6-hero.jpg
+|   `-- pinout-openmv-n6-pag7936.png
+|-- official_pages
+|   |-- openmv-n6-product-page.html
+|   `-- openmv-n6-quickref.html
+`-- official_pdfs
+    |-- core_docs
+    |-- component_datasheets
+    `-- certifications
+```
+
+## 6. 本地文件清单
+
+### 6.1 官方页面
+
+| 文件 | 用途 |
+|---|---|
+| `official_pages/openmv-n6-quickref.html` | OpenMV N6 快速参考页，适合先查引脚、总线、供电、运行说明 |
+| `official_pages/openmv-n6-product-page.html` | OpenMV N6 产品页，适合查总体规格、官方附件入口、宣传参数 |
+
+### 6.2 官方图片
+
+| 文件 | 用途 |
+|---|---|
+| `official_media/openmv-n6-hero.jpg` | 官方展示图 |
+| `official_media/pinout-openmv-n6-pag7936.png` | 官方引脚图，后面做接线时很有用 |
+
+### 6.3 核心文档
+
+| 文件 | 用途 |
+|---|---|
+| `official_pdfs/core_docs/Battery_Guide_500mA_Charging.pdf` | 官方电池/充电指导 |
+| `official_pdfs/core_docs/OpenMV-N6-Schematic-Rev4.pdf` | OpenMV N6 整板原理图，最关键 |
+| `official_pdfs/core_docs/pag7936-schematic-v3.pdf` | PAG7936 摄像头模块/传感器相关原理图 |
+| `official_pdfs/core_docs/stm32n657a0.pdf` | STM32N657A0 数据手册 |
+| `official_pdfs/core_docs/rm0486-stm32n647657xx-reference-manual.pdf` | STM32N647/657 参考手册，寄存器级开发最关键 |
+
+### 6.4 板上器件数据手册
+
+这些文件基本都是 OpenMV 官方产品页列出来的板上关键器件资料，后面查供电、保护、存储、无线、IMU、音频时会用到：
+
+| 文件 | 说明 |
+|---|---|
+| `official_pdfs/component_datasheets/PAG7936LT_Product_Brief.pdf` | PAG7936 简版资料 |
+| `official_pdfs/component_datasheets/PAG7936LT_Datasheet.pdf` | PAG7936 详细数据手册 |
+| `official_pdfs/component_datasheets/BQ24075.pdf` | 电池充电/电源管理相关 |
+| `official_pdfs/component_datasheets/LM66200.pdf` | 电源路径/保护相关 |
+| `official_pdfs/component_datasheets/LM66100.pdf` | 电源路径/保护相关 |
+| `official_pdfs/component_datasheets/TCR2LE18_datasheet_en_20141106.pdf` | LDO/稳压相关 |
+| `official_pdfs/component_datasheets/TPS62825.pdf` | DC-DC 相关 |
+| `official_pdfs/component_datasheets/AP22800.pdf` | 电源开关相关 |
+| `official_pdfs/component_datasheets/MIC5365.pdf` | LDO 相关 |
+| `official_pdfs/component_datasheets/APS512XXN_PSRAM_512Mb.pdf` | 外挂 PSRAM 资料 |
+| `official_pdfs/component_datasheets/MX25UM25645G_1.8V_256Mb.pdf` | 板载 Flash 资料 |
+| `official_pdfs/component_datasheets/TPS22919.pdf` | 负载开关相关 |
+| `official_pdfs/component_datasheets/SN74LVC1G3157.pdf` | 模拟开关/信号切换相关 |
+| `official_pdfs/component_datasheets/TYPE1YN_Murata_WiFi_BT_Module.pdf` | Murata 无线模组资料 |
+| `official_pdfs/component_datasheets/CYW43439_Datasheet.pdf` | Wi-Fi/BT 芯片资料 |
+| `official_pdfs/component_datasheets/RTL8211FI-CG.pdf` | 千兆以太网 PHY 资料 |
+| `official_pdfs/component_datasheets/PUSB3BB4_SDS.pdf` | ESD/USB 防护器件资料 |
+| `official_pdfs/component_datasheets/LSM6DSM.pdf` | 板载 IMU 资料 |
+| `official_pdfs/component_datasheets/T3902_microphone.pdf` | 麦克风资料 |
+| `official_pdfs/component_datasheets/MCP6006_Data_Sheet.pdf` | 运放资料 |
+| `official_pdfs/component_datasheets/PUSB3TB6.pdf` | ESD/USB 防护器件资料 |
+| `official_pdfs/component_datasheets/ECMF02-4CMX8.pdf` | EMI/ESD 滤波与防护器件资料 |
+| `official_pdfs/component_datasheets/EMI8141-D.pdf` | EMI 相关器件资料 |
+
+### 6.5 认证资料
+
+| 文件 | 说明 |
+|---|---|
+| `official_pdfs/certifications/OpenMVN6_CE_RED_Certificate.pdf` | CE / RED 认证资料 |
+| `official_pdfs/certifications/COBO26010330_ROHS.pdf` | RoHS 资料 |
+| `official_pdfs/certifications/COBO26010330_ROHS_2.0.pdf` | RoHS 相关补充资料 |
+
+## 7. 后续最建议你重点看的几个文件
+
+如果你的目标是把 OpenMV N6 作为视觉模组集成到自己的控制系统里，优先级最高的是：
+
+- `official_media/pinout-openmv-n6-pag7936.png`
+- `official_pages/openmv-n6-quickref.html`
+- `official_pdfs/core_docs/OpenMV-N6-Schematic-Rev4.pdf`
+- `official_pdfs/core_docs/stm32n657a0.pdf`
+- `official_pdfs/core_docs/rm0486-stm32n647657xx-reference-manual.pdf`
+
+如果你的目标是画扩展板或主控板接口：
+
+- 先看 quick reference 确认引脚功能
+- 再看 N6 原理图确认这些引脚在板上到底接了什么
+- 再看器件级 datasheet，确认供电、ESD、时序和电平约束
+
+## 8. 我额外帮你确认到的几个关键点
+
+- OpenMV 官方明确提醒：`I/O 不是 5V tolerant`
+- `VIN` 不应超过 `5.7V`
+- 官方建议通过 `VIN` 供电
+- `3.3V` 引脚是输出，不适合作为主供电输入
+- quick reference 给出了最实用的外设引脚映射，做主控对接时比单看宣传页更可靠
+- 产品页宣传中提到 `two CAN buses`，但 quick reference 当前明确写出的仅有 `CAN1`，这属于后续值得用原理图再核实的一点
+
+## 9. 备注
+
+这份整理的重点是“把官方资料先收齐并分门别类”。如果你后面要继续深入，我可以直接基于这个目录继续帮你做下面几种二次整理：
+
+- 按“和 F407 对接”视角，抽出最相关的引脚与通信方式
+- 按“供电树”视角，把 N6 的电源链路单独梳理出来
+- 按“扩展板设计”视角，把哪些接口适合引出、哪些需要电平/保护、哪些最好不要碰，单独做一版表

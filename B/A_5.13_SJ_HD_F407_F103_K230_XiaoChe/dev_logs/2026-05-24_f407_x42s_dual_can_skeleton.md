@@ -1,0 +1,46 @@
+# F407 X42S Dual CAN Skeleton
+
+- Date: `2026-05-24`
+- Status: `implemented`
+- Target project:
+  - `F407 main control panel TB6612 Stepper motor pan-tilt version\code\5.15_F407_TB6612`
+- Hardware assumptions:
+  - `2 x X42S_V1.0`
+  - `motor 1 connector -> CAN2`
+  - `motor 2 connector -> CAN1`
+  - default protocol branch: `Emm`
+  - default addresses in code: `1` and `2`
+- Main changes:
+  - Old `gray_module / gray_monitor / motor_drive` mainline was removed from `main.c`.
+  - Added `x42s_can_bus.h/.c` for:
+    - CAN1/CAN2 startup
+    - global accept-all filters
+    - RX0 + SCE interrupt-driven receive/error callbacks
+    - single-frame and multi-packet command send helpers
+    - `enable / stop / read version / read speed / read position / read status / read homing status`
+    - protocol-switchable `velocity` and `position` command builders for `Emm` and `X`
+  - Added `x42s_gimbal_app.h/.c` for:
+    - startup sequencing
+    - periodic telemetry polling
+    - OLED runtime diagnostics
+  - Updated `can.c` CAN timing from the degenerate CubeMX 3-TQ setup to a usable `875 kbps` timing:
+    - `Prescaler=4`
+    - `BS1=9TQ`
+    - `BS2=2TQ`
+  - Added `CAN1_RX0 / CAN1_SCE / CAN2_RX0 / CAN2_SCE` IRQ handlers in `stm32f4xx_it.c`.
+  - Added the new source files to `5.15_F407_TB6612.uvprojx`.
+- Verification:
+  - `gcc -fsyntax-only` was run on:
+    - `x42s_can_bus.c`
+    - `x42s_gimbal_app.c`
+    - `main.c`
+    - `can.c`
+    - `stm32f4xx_it.c`
+  - Result:
+    - exit code `0`
+    - only host-side CMSIS pointer-size warnings from `core_cm4.h`
+- Known limits in this stage:
+  - No real motor motion policy is bound yet; this is a CAN backbone and diagnostics skeleton.
+  - Actual motor CAN addresses may differ from `1/2`.
+  - If the motors are not on `Emm` firmware, switch the protocol macro before motion-command use.
+  - Keil/ARM build was not executed here because `UV4.exe` and `armcc` were not available in PATH.

@@ -1,0 +1,22 @@
+# OpenMV N6 runtime PWM import fix
+
+- Date: `2026-05-23`
+- Status: `implemented`
+- Scope:
+  - `OpenMV Visual module(SJ)\code\main.py`
+  - `OpenMV Visual module(SJ)\code\README.md`
+- Problem:
+  - Board runtime raised `ImportError: can't import name PWM` on OpenMV N6 firmware `v4.8.1 / MicroPython v1.26.0-77`.
+- Fix:
+  - removed the direct `from machine import PWM` dependency
+  - removed the custom `PWMBacklight` wrapper
+  - switched screen init to the official `display.SPIDisplay(...)` path
+  - kept backlight handling compatible through the default GPIO controller
+- Verification:
+  - `python -m py_compile ...\OpenMV Visual module(SJ)\code\main.py`
+  - passed
+- Follow-up on hardware:
+  - confirm the script now boots on the N6
+  - confirm the screen lights and shows live view + FPS
+  - confirm red target overlay appears
+  - confirm F407 vision diagnostics become online

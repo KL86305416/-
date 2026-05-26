@@ -1,0 +1,23 @@
+# OpenMV LCD probe and restore
+
+- Date: `2026-05-23`
+- Status: `implemented`
+- Scope:
+  - `OpenMV Visual module(SJ)\code\main.py`
+  - `OpenMV Visual module(SJ)\code\lcd_probe.py`
+  - `OpenMV Visual module(SJ)\code\README.md`
+- Goal:
+  - restore official LCD output in the main vision script
+  - add a dedicated probe path for abnormal LCD color/orientation issues
+- Change:
+  - re-enabled LCD output by default in `main.py`
+  - made LCD parameters explicit: `LCD_REFRESH`, `LCD_BGR`, `LCD_BYTE_SWAP`, `LCD_HMIRROR`, `LCD_VFLIP`
+  - added `lcd_probe.py` to cycle through likely parameter combinations on the touch LCD shield
+  - documented the probe workflow in `README.md`
+- Verification:
+  - `python -m py_compile ...\OpenMV Visual module(SJ)\code\main.py`
+  - `python -m py_compile ...\OpenMV Visual module(SJ)\code\lcd_probe.py`
+  - both passed
+- Expected usage:
+  - run `main.py` first if the current default LCD config works
+  - run `lcd_probe.py` if colors/orientation are still abnormal and record the correct mode

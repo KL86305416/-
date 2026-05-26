@@ -1,0 +1,28 @@
+# OpenMV LCD official exact path
+
+- Date: `2026-05-23`
+- Status: `implemented`
+- Scope:
+  - `OpenMV Visual module(SJ)\code\main.py`
+  - `OpenMV Visual module(SJ)\code\lcd_shield_exact.py`
+  - `OpenMV Visual module(SJ)\code\lcd_min_test.py`
+  - `OpenMV Visual module(SJ)\code\lcd_probe.py`
+  - `OpenMV Visual module(SJ)\code\README.md`
+- Goal:
+  - reduce the 1.8-inch LCD Shield path to the closest possible official initialization flow
+  - separate true LCD/controller incompatibility from extra tuning parameters in the main application
+- Change:
+  - changed `main.py` so `DISPLAY_KIND = "lcd_1p8"` uses `display.SPIDisplay(vflip=True, hmirror=True)` style initialization only
+  - added `lcd_shield_exact.py` as a near-verbatim official 1.8-inch LCD Shield sanity-check script
+  - simplified `lcd_min_test.py` to a camera-independent static pattern test on the same minimal LCD init path
+  - simplified `lcd_probe.py` so it only varies orientation/color flags and no longer forces width/height/refresh for the 1.8-inch path
+  - updated `README.md` to define the recommended diagnostic order:
+    - `lcd_shield_exact.py`
+    - `lcd_min_test.py`
+    - `lcd_probe.py`
+- Verification:
+  - `python -m py_compile ...\main.py ...\lcd_min_test.py ...\lcd_probe.py ...\lcd_shield_exact.py`
+  - passed
+- Diagnostic interpretation:
+  - if `lcd_shield_exact.py` still shows heavy garbling, the issue is very likely outside the current application logic
+  - if `lcd_shield_exact.py` works but `main.py` does not, the remaining issue is in the live vision pipeline rather than the base LCD bring-up

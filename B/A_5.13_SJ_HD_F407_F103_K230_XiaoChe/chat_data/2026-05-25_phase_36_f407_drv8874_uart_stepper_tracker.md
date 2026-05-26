@@ -1,0 +1,30 @@
+# Phase 36
+
+- Date: `2026-05-25`
+- Topic: `f407_drv8874_uart_stepper_tracker`
+- Trigger:
+  - The active board variant switched to `F407 main control panel DRV8874`.
+  - The requirement changed from onboard PWM motor drive to:
+    - receive OpenMV offset data on the F407
+    - drive a serial stepper pan-tilt gimbal from `UART5` and `USART6`
+    - keep the OpenMV mounted on the gimbal for continuous target tracking
+- Result:
+  - The DRV8874 firmware was moved onto a new runtime path centered on:
+    - `UART4` short-frame receive from OpenMV
+    - `UART5` serial stepper control for pan
+    - `USART6` serial stepper control for tilt
+    - a deadband + proportional tracking loop
+    - OLED diagnostics for live status
+  - The old `gray_module / gray_monitor / motor_drive` runtime is no longer used by `main.c`.
+  - The current OpenMV 11-byte `A5 5A` frame is now parsed directly on the F407 side instead of using the older `AA55 + CRC16` protocol layer.
+  - A staged startup enable sequence was added for both serial stepper links before tracking commands are issued.
+- Verification:
+  - Pre-edit backup was saved to `backups/2026-05-25_f407_drv8874_uart_stepper_tracker_prechange`.
+  - A host-side `gcc -fsyntax-only` pass returned exit code `0` for all newly added and modified C files.
+  - Only CMSIS host-environment pointer-width warnings appeared; no new syntax errors were reported.
+  - A Keil/ARM full project build was not run in this session because the local ARM toolchain executables were not available from PATH.
+- Next likely on-board adjustments:
+  - verify whether `UART5` and `USART6` are physically mapped to the intended pan/tilt motors
+  - confirm whether both motors still use address `0x01`
+  - if axis direction runs backward, flip `GIMBAL_INVERT_PAN` and/or `GIMBAL_INVERT_TILT`
+  - retune `GIMBAL_KP_*` and RPM limits on the real gimbal until tracking is stable

@@ -1,0 +1,21 @@
+# OpenMV red core target tuning
+
+- Date: `2026-05-23`
+- Status: `implemented`
+- Scope:
+  - `OpenMV Visual module(SJ)\code\main.py`
+- Trigger:
+  - The physical target is not a plain red circle.
+  - It is a transparent outer ring with a red center disc and a white printed logo in the middle.
+- Change:
+  - tuned the blob classifier to prioritize the red center disc instead of a generic red circle
+  - lowered the density threshold to tolerate the white logo hole
+  - added compactness, red-pixel count, and disc-fill checks
+  - kept the existing `UART7` packet format unchanged
+- Verification:
+  - `python -m py_compile ...\OpenMV Visual module(SJ)\code\main.py`
+  - passed
+- Expected behavior:
+  - `DX` follows the center of the red core
+  - transparent outer ring is ignored
+  - `R` represents the red core scale, not the full transparent outer diameter

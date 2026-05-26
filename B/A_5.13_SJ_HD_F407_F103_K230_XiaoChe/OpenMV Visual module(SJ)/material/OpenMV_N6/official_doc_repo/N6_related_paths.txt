@@ -1,0 +1,36 @@
+﻿# OpenMV N6 related paths
+
+## Docs files with N6 mentions
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\templates\topindex.html
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\library\index.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\library\machine.PWM.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\locale\zh_CN\LC_MESSAGES\openmvcam\tutorial\io_tutorial.po
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\changelog\v5.0.0.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\locale\zh_CN\LC_MESSAGES\openmvcam\quickref.po
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\changelog\v4.8.0.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\changelog\v4.7.0.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\changelog\v4.6.0.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\tutorial\io_tutorial.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\tutorial\firmware_development.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\quickref.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\sensors\flir-boson.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\sensors\multispectral-event.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\sensors\ov5640.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\sensors\pag7936.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\quickref\openmv-n6.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\sensors\ps5520.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\shields\gigabit-poe-shield.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\openmvcam\quickref\openmv-rt1062.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\library\stm.rst
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\docs\library\types.rst
+
+## Board definition files
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\bdev.c
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\board.c
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\board.ld
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\manifest.py
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\mpconfigboard.h
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\mpconfigboard.mk
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\partition_stm32n657xx.h
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\pins.csv
+D:\A_5.13_SJ_HD_F407_F103_K230_XiaoChe\OpenMV Visual module(SJ)\material\OpenMV_N6\official_doc_repo\openmv-doc\micropython\ports\stm32\boards\OPENMV_N6\stm32n6xx_hal_conf.h

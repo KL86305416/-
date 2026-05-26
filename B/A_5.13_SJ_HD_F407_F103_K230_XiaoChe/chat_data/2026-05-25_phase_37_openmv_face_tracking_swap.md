@@ -1,0 +1,21 @@
+# Phase 37
+
+- Date: `2026-05-25`
+- Topic: `openmv_face_tracking_swap`
+- Trigger:
+  - The current OpenMV target detector was judged not mature enough in real use.
+  - The requirement changed to face detection while still returning the center offset to the F407 controller.
+- Result:
+  - `OpenMV Visual module(SJ)\code\main.py` was switched from black-rectangle detection to face detection.
+  - The new script uses:
+    - `BlazeFace` as the primary face detector on the N6
+    - built-in Haar frontal-face detection as fallback
+  - The UART telemetry protocol was intentionally kept unchanged, so the F407 tracking firmware does not need to be updated just because the target class changed from generic object to face.
+  - The on-screen overlay still shows FPS in the upper-left corner and now draws the face box / center point.
+- Verification:
+  - A pre-edit backup of `main.py` was saved to `backups/2026-05-25_openmv_n6_face_tracking_swap`.
+  - Host-side `py_compile` completed successfully for the updated `main.py`.
+- Next likely on-board check:
+  - confirm whether the board loads the BlazeFace ROM model successfully
+  - verify that the face box is stable at your working distance
+  - if the gimbal runs in the wrong direction, correct that on the F407 side, not by changing the OpenMV frame definition

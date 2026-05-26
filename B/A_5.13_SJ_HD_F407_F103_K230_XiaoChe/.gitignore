@@ -1,0 +1,36 @@
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Keil / MDK user-specific files
+*.uvoptx
+*.uvguix.*
+*.iex
+
+# Common embedded build artifacts
+*.axf
+*.bin
+*.crf
+*.d
+*.dep
+*.elf
+*.hex
+*.htm
+*.lib
+*.lnp
+*.lst
+*.map
+*.o
+*.obj
+
+# Common build output directories
+**/Debug/
+**/Release/
+**/Listings/
+**/Objects/
+
+# Keil target output folders in current workspace
+**/MDK-ARM/4.28_test/
+**/MDK-ARM/F407VET6_5.1_Test/
+**/MDK-ARM/5.15_F407_TB6612/
+**/MDK-ARM/DebugConfig/*.dbgconf

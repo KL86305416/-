@@ -1,0 +1,35 @@
+# OpenMV N6 Face Stability Tuning
+
+- Date: `2026-05-25`
+- Status: `implemented`
+- Target project:
+  - `OpenMV Visual module(SJ)\code\main.py`
+- Goal:
+  - Fix the symptom where the OpenMV face-tracking program runs normally for only a few seconds and then freezes.
+- Root causes addressed:
+  - `PRINT_VISION_TO_REPL = True` was printing every frame and could block or flood the IDE / REPL path.
+  - `csi.VGA` preview plus face detection every frame was too heavy for sustained operation when combined with LCD refresh and UART output.
+  - The main loop allocated a fresh UART frame buffer every iteration, increasing GC pressure.
+  - The loop had no periodic `gc.collect()` and no short-term reuse of the last valid detection result.
+- Main changes:
+  - Changed camera preview framesize from `csi.VGA` to `csi.QVGA`.
+  - Disabled per-frame REPL vision logging by default.
+  - Added throttled REPL logging interval control (`REPL_LOG_INTERVAL_MS`).
+  - Added detector scheduling:
+    - run face detection every `3` frames
+    - refresh the LCD every `2` frames
+    - run `gc.collect()` every `10` frames
+  - Added a `250 ms` stale-result hold window so brief missed detections do not immediately collapse tracking output.
+  - Reused a preallocated UART telemetry buffer instead of creating a new `bytearray` on every loop.
+  - Disabled BlazeFace landmark drawing by default to reduce overlay cost.
+- Protocol impact:
+  - No UART protocol change.
+  - Frame structure remains the same `A5 5A` 11-byte packet already consumed by the F407 side.
+- Verification:
+  - Backup already present at:
+    - `backups/2026-05-25_openmv_n6_face_stability_tuning`
+  - Host-side syntax validation should be run after patching:
+    - `py_compile` for `OpenMV Visual module(SJ)\code\main.py`
+- Runtime expectation:
+  - Tracking responsiveness is slightly lower than full-frame full-rate detection, but sustained runtime stability should be materially better.
+  - If additional freezing still remains, the next suspects are LCD driver bandwidth / shield wiring / power integrity rather than the current Python loop structure alone.

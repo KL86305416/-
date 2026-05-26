@@ -1,0 +1,4 @@
+[submodule "micropython"]
+	path = micropython
+	url = https://github.com/openmv/micropython-doc.git
+	branch = openmv-1.24.0-doc

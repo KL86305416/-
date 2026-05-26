@@ -1,0 +1,15 @@
+# type(scope): short summary
+#
+# Recommended types:
+# feat | fix | refactor | docs | chore | test | backup
+#
+# Recommended scopes:
+# workspace | repo | f103-gray | f407-drv8874 | f407-tb6612 | openmv | k230 | docs | backup
+#
+# Why:
+# - what changed
+# - why it changed
+# - hardware/protocol impact if any
+#
+# Verify:
+# - build / syntax check / board test / not tested

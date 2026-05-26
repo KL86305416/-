@@ -1,0 +1,68 @@
+# F407 DRV8874 UART Stepper Tracker
+
+- Date: `2026-05-25`
+- Status: `implemented`
+- Target project:
+  - `F407 main control panel DRV8874\code\AAA_F407VET6_5.6_Test`
+- Hardware assumptions:
+  - `OpenMV N6` sends the active `A5 5A` 11-byte short frame on `UART4`
+  - `UART4` (`PA0/PA1`) is the F407 vision link
+  - `UART5` is used as the `pan / yaw` stepper serial link
+  - `USART6` is used as the `tilt / pitch` stepper serial link
+  - Both stepper links default to motor address `0x01` because they are separate UART buses
+- Main changes:
+  - Added `openmv_vision.h/.c`:
+    - byte-wise `UART4` interrupt receive state machine
+    - parse of the current OpenMV `A5 5A` short frame
+    - `CRC8(poly=0x07, init=0x00)` verification
+    - online/offline and RX statistics tracking
+  - Added `emm_ttl_motor.h/.c`:
+    - serial stepper control over `UART5` and `USART6`
+    - `enable / velocity / stop` command builders for `Emm` TTL framing
+    - staged boot enable sequence for both motors
+  - Added `gimbal_tracker.h/.c`:
+    - `x_offset -> pan`, `y_offset -> tilt`
+    - deadband + proportional speed mapping
+    - cached command suppression to avoid redundant UART flooding
+    - target-loss stop behavior
+  - Added `tracker_monitor.h/.c`:
+    - OLED runtime display for link state, offsets, flags, velocity commands, CRC/sync counters
+  - Updated `main.c`:
+    - removed the old gray-module runtime path from the active mainline
+    - new main loop is `OpenMVVision -> EmmTtlMotor -> GimbalTracker -> TrackerMonitor`
+    - LED1 now shows vision-link online state
+    - LED2 now shows target-valid / tracking / locked state
+  - Updated `usart.c` and `stm32f4xx_it.*`:
+    - enabled `UART4_IRQn`
+    - added `UART4_IRQHandler`
+  - Updated `MDK-ARM\F407VET6_5.1_Test.uvprojx`:
+    - added the new source files to the Keil project
+- Verification:
+  - Pre-edit backup created at:
+    - `backups/2026-05-25_f407_drv8874_uart_stepper_tracker_prechange`
+  - Host-side `gcc -fsyntax-only` checks passed for:
+    - `openmv_vision.c`
+    - `emm_ttl_motor.c`
+    - `gimbal_tracker.c`
+    - `tracker_monitor.c`
+    - `main.c`
+    - `usart.c`
+    - `stm32f4xx_it.c`
+  - Result:
+    - exit code `0`
+    - only host-side CMSIS pointer-size warnings from `core_cm4.h`
+- Tuning points:
+  - If pan or tilt moves away from the target, flip:
+    - `GIMBAL_INVERT_PAN`
+    - `GIMBAL_INVERT_TILT`
+  - If the motion is too slow or too aggressive, tune:
+    - `GIMBAL_KP_*`
+    - `GIMBAL_V_MIN_RPM`
+    - `GIMBAL_V_MAX_RPM`
+  - If your two motors are not both `0x01`, update:
+    - `EMM_TTL_PAN_ADDRESS`
+    - `EMM_TTL_TILT_ADDRESS`
+- Known limits in this stage:
+  - No real motor feedback parsing is implemented yet; readiness is based on successful UART command transmit plus startup enable sequencing.
+  - The board-side `UART5 -> pan` and `USART6 -> tilt` mapping is a software default and may need swapping on the actual rig.
+  - Keil/ARM full build was not executed here because `UV4.exe` and ARM compiler executables were not available in PATH.

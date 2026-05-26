@@ -1,0 +1,29 @@
+# OpenMV N6 Haar Fallback Fix
+
+- Date: `2026-05-25`
+- Status: `implemented`
+- Target project:
+  - `OpenMV Visual module(SJ)\code\main.py`
+- Trigger:
+  - Runtime message:
+    - `haar load failed: [Errno 2] ENOENT`
+- Cause:
+  - The script used `image.HaarCascade("frontalface")`.
+  - On the current OpenMV N6 firmware in use, that built-in short-name alias did not resolve.
+  - Local official examples for the same repo use the explicit ROM path:
+    - `/rom/haarcascade_frontalface.cascade`
+- Main changes:
+  - Added ordered Haar cascade candidates:
+    - `/rom/haarcascade_frontalface.cascade`
+    - `frontalface`
+  - Added `HAAR_STAGES = 25` to match the official face-detection examples.
+  - Updated fallback loader to try the ROM path first and only print one final error if all candidates fail.
+- Impact:
+  - No UART protocol change.
+  - No change to the primary `BlazeFace` path.
+  - This only fixes the Haar backup detector initialization path.
+- Verification:
+  - Backup created at:
+    - `backups/2026-05-25_openmv_n6_haar_fallback_fix`
+  - Host-side syntax check:
+    - `py_compile` passed for `OpenMV Visual module(SJ)\code\main.py`

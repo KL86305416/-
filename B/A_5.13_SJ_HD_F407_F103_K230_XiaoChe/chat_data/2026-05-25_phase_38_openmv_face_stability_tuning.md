@@ -1,0 +1,26 @@
+# Phase 38
+
+- Date: `2026-05-25`
+- Topic: `openmv_face_stability_tuning`
+- Trigger:
+  - The OpenMV face-tracking program could run smoothly for only a few seconds before freezing.
+- Result:
+  - `OpenMV Visual module(SJ)\code\main.py` was optimized for sustained runtime instead of maximum per-frame throughput.
+  - The updated loop now:
+    - disables per-frame REPL telemetry logging by default
+    - lowers preview resolution to `QVGA`
+    - runs face detection once every `3` frames
+    - refreshes the LCD once every `2` frames
+    - reuses the last valid face result for up to `250 ms`
+    - reuses a fixed UART frame buffer
+    - performs periodic garbage collection
+  - The UART frame format returned to the F407 controller remains unchanged.
+- Expected benefit:
+  - Lower peak load
+  - Lower allocation churn
+  - Better tolerance to short inference gaps
+  - Much lower risk of the script hanging because of REPL output flooding
+- Verification:
+  - Backup directory already exists:
+    - `backups/2026-05-25_openmv_n6_face_stability_tuning`
+  - Host-side syntax check should pass for the updated `main.py`.

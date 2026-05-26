@@ -1,0 +1,80 @@
+import csi
+import display
+import image
+import time
+from machine import Pin, PWM
+
+
+# Set this to match the official screen you actually attached.
+# Supported values:
+# - "lcd_1p8"     -> OpenMV LCD Shield, 128x160, backlight on P5
+# - "touch_lcd_2p3" -> OpenMV Touch LCD Shield, 320x240, backlight on P6
+DISPLAY_KIND = "touch_lcd_2p3"
+
+BACKLIGHT_PERCENT = 80
+PRINT_FPS_TO_REPL = True
+
+
+class PWMBacklight:
+    def __init__(self, pin_name, frequency=200):
+        self._pwm = PWM(Pin(pin_name), freq=frequency, duty_u16=0)
+
+    def backlight(self, value):
+        duty_u16 = int(max(0, min(100, value)) * 65535 / 100)
+        self._pwm.duty_u16(duty_u16)
+
+    def deinit(self):
+        self._pwm.deinit()
+
+
+def build_display_config(kind):
+    if kind == "lcd_1p8":
+        return {
+            "sensor_framesize": (128, 160),
+            "display_kwargs": {
+                "width": 128,
+                "height": 160,
+                "backlight": PWMBacklight("P5"),
+            },
+        }
+
+    if kind == "touch_lcd_2p3":
+        return {
+            "sensor_framesize": csi.QVGA,
+            "display_kwargs": {
+                "width": 320,
+                "height": 240,
+                "bgr": True,
+                "vflip": False,
+                "hmirror": False,
+                "backlight": PWMBacklight("P6"),
+            },
+        }
+
+    raise ValueError("Unsupported DISPLAY_KIND: %s" % kind)
+
+
+def main():
+    cfg = build_display_config(DISPLAY_KIND)
+
+    cam = csi.CSI()
+    cam.reset()
+    cam.pixformat(csi.RGB565)
+    cam.framesize(cfg["sensor_framesize"])
+
+    lcd = display.SPIDisplay(**cfg["display_kwargs"])
+    lcd.backlight(BACKLIGHT_PERCENT)
+
+    clock = time.clock()
+
+    while True:
+        clock.tick()
+        frame = cam.snapshot()
+        frame.draw_string(2, 2, "FPS: %.1f" % clock.fps(), color=(255, 255, 255), scale=2)
+        lcd.write(frame, hint=image.CENTER | image.SCALE_ASPECT_KEEP)
+
+        if PRINT_FPS_TO_REPL:
+            print("fps:", clock.fps())
+
+
+main()

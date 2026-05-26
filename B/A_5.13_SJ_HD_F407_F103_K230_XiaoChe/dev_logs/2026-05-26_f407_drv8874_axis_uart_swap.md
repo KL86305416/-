@@ -1,0 +1,23 @@
+# F407 DRV8874 Axis UART Mapping Swap
+
+- Date: `2026-05-26`
+- Status: `implemented`
+- Target project:
+  - `F407 main control panel DRV8874\code\AAA_F407VET6_5.6_Test`
+- Trigger:
+  - Mechanical axis ownership was clarified on the real rig:
+    - `UART5` motor = up/down axis
+    - `USART6` motor = left/right axis
+- Main changes:
+  - Updated `emm_ttl_motor.c` axis-to-UART mapping so software axis meaning matches the installed mechanics:
+    - `PAN / left-right` -> `USART6`
+    - `TILT / up-down` -> `UART5`
+- Scope note:
+  - No protocol or baud-rate change in this step.
+  - This only swaps which serial port is bound to `PAN` versus `TILT` in software.
+- Verification:
+  - Backup created at:
+    - `backups/2026-05-26_f407_drv8874_axis_uart_swap`
+- Runtime expectation:
+  - `x_offset` now drives the left-right motor on `USART6`.
+  - `y_offset` now drives the up-down motor on `UART5`.

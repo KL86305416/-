@@ -1,0 +1,28 @@
+# OpenMV N6 Official Display Live View
+
+This folder contains a `main.py` script for showing the OpenMV N6 camera image on an official OpenMV SPI display shield.
+
+Supported screens:
+
+- `lcd_1p8`
+  - OpenMV LCD Shield
+  - `128x160`
+  - backlight pin `P5`
+
+- `touch_lcd_2p3`
+  - OpenMV Touch LCD Shield
+  - `320x240`
+  - backlight pin `P6`
+
+## How to use
+
+1. Open [main.py](D:/A_5.13_SJ_HD_F407_F103_K230_XiaoChe/OpenMV%20Visual%20module(SJ)/code/main.py:1)
+2. Set `DISPLAY_KIND` to match your screen.
+3. Upload `main.py` to the OpenMV N6 board.
+4. Power-cycle the board.
+
+## Notes
+
+- The script uses the official OpenMV `csi` and `display.SPIDisplay` APIs.
+- The image is scaled to fit the display while keeping aspect ratio.
+- FPS is printed to the REPL/serial console by default.

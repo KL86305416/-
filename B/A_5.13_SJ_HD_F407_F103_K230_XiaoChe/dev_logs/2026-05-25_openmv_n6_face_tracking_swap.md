@@ -1,0 +1,42 @@
+# OpenMV N6 Face Tracking Swap
+
+- Date: `2026-05-25`
+- Status: `implemented`
+- Target project:
+  - `OpenMV Visual module(SJ)\code\main.py`
+- Goal:
+  - Replace the current immature generic object / rectangle detector with face detection.
+  - Keep the existing 11-byte UART telemetry frame unchanged so the F407 side does not need a protocol update.
+- Main changes:
+  - Replaced the black-rectangle detection path in `main.py` with:
+    - primary detector: `BlazeFace` via `ml.Model("/rom/blazeface_front_128.tflite")`
+    - fallback detector: built-in `image.HaarCascade("frontalface")`
+  - Preserved:
+    - `UART7` at `115200`
+    - the `A5 5A` 11-byte frame layout
+    - LCD live preview
+    - top-left FPS overlay
+  - The face detector now returns:
+    - `x_offset`
+    - `y_offset`
+    - `width_out`
+    - flags compatible with the previous F407 parser
+  - The LCD overlay now draws:
+    - face rectangle
+    - face center cross
+    - BlazeFace landmarks when available
+    - `DX / DY / W`
+- Compatibility notes:
+  - The F407 side only consumes numeric offsets/width/flags, so no F407 code change was required.
+  - Flag bit positions were preserved:
+    - `0x01` valid
+    - `0x02` target found
+    - `0x04` target good
+- Verification:
+  - Backup created at:
+    - `backups/2026-05-25_openmv_n6_face_tracking_swap`
+  - Host-side syntax check:
+    - `py_compile` passed for `OpenMV Visual module(SJ)\code\main.py`
+- Runtime notes:
+  - If the REPL prints `blazeface load failed` or `blazeface predict failed`, the script will automatically continue in Haar fallback mode.
+  - If the face tracking direction on the gimbal is wrong, fix it on the F407 side using the existing `GIMBAL_INVERT_*` macros rather than changing the OpenMV frame.
